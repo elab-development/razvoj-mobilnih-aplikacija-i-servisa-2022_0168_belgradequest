@@ -10,7 +10,11 @@ export const BQ = {
   white: '#FFFFFF',
   whiteMuted: 'rgba(255,255,255,0.6)',
   overlay: 'rgba(7, 64, 71, 0.85)',
+  
 };
+export const Spacing = { xs: 4, sm: 8, md: 16, lg: 24, xl: 32, xxl: 48 };
+export const Radius = { sm: 4, md: 8, lg: 16, pill: 999 };
+
 
 // Zadržavamo Colors strukturu jer je koriste ThemedView/ThemedText/tabs
 const tintColor = '#1C8585';
@@ -54,3 +58,4 @@ export const Fonts = Platform.select({
     mono: "SFMono-Regular, Menlo, Monaco, Consolas, monospace",
   },
 });
+

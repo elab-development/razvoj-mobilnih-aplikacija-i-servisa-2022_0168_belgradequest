@@ -1,14 +1,17 @@
 import { BQ } from '@/constants/theme';
 import { router } from 'expo-router';
-import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
 export default function OnboardingScreen() {
   return (
     <View style={styles.container}>
       {/* Logo */}
       <View style={styles.logoContainer}>
-        <Text style={styles.logoSmall}>belgrade</Text>
-        <Text style={styles.logoLarge}>quest</Text>
+        <Image
+                  source={require('@/assets/images/Logo.png')}
+                  style={styles.large}
+                  resizeMode="contain"
+                      />
       </View>
 
       {/* Tagline */}
@@ -41,25 +44,13 @@ const styles = StyleSheet.create({
   logoContainer: {
     alignItems: 'center',
   },
-  logoSmall: {
-    color: BQ.white,
-    fontSize: 18,
-    letterSpacing: 2,
-    fontWeight: '300',
-  },
-  logoLarge: {
-    color: BQ.white,
-    fontSize: 64,
-    fontWeight: '800',
-    letterSpacing: -1,
-  },
   taglineContainer: {
     alignItems: 'center',
     gap: 6,
   },
   tagline: {
     color: BQ.white,
-    fontSize: 14,
+    fontSize: 16,
     letterSpacing: 3,
     fontWeight: '600',
   },
@@ -79,4 +70,5 @@ const styles = StyleSheet.create({
     fontWeight: '700',
     letterSpacing: 2,
   },
+   large: { width: 500, height: 200}
 });

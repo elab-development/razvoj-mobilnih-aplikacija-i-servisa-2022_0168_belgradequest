@@ -1,9 +1,10 @@
 import { BQ } from '@/constants/theme';
 import { router } from 'expo-router';
 import { useEffect } from 'react';
-import { ActivityIndicator, StyleSheet, Text, View } from 'react-native';
+import { ActivityIndicator, Image, StyleSheet, View } from 'react-native';
 
 export default function SplashScreen() {
+  
   useEffect(() => {
     const timer = setTimeout(() => {
       router.replace('/(auth)/onboarding');
@@ -14,9 +15,11 @@ export default function SplashScreen() {
   return (
     <View style={styles.container}>
       <View style={styles.logoContainer}>
-        {/* Ovde ćemo ubaciti pravi logo kad dodaš assets */}
-        <Text style={styles.logoSmall}>belgrade</Text>
-        <Text style={styles.logoLarge}>quest</Text>
+        <Image
+          source={require('@/assets/images/Logo.png')}
+          style={styles.large}
+          resizeMode="contain"
+              />
       </View>
       <ActivityIndicator
         color={BQ.green}
@@ -53,4 +56,6 @@ const styles = StyleSheet.create({
     position: 'absolute',
     bottom: 80,
   },
+   large: { width: 500, height: 300 },
+  
 });
