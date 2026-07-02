@@ -21,7 +21,7 @@ export default function RegisterScreen() {
 
   const handleRegister = () => {
     // TODO: povezati sa API-jem
-    router.replace('/(tabs)');
+    router.replace('/(tabs)/quest');
   };
 
   return (

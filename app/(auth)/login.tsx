@@ -12,7 +12,7 @@ export default function LoginScreen() {
 
   const handleLogin = () => {
     // TODO: povezati sa pravim API-jem kad baza bude spremna
-    router.replace('/(tabs)');
+    router.replace('/(tabs)/quest');
   };
 
   return (

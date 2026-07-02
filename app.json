@@ -41,6 +41,12 @@
             "backgroundColor": "#000000"
           }
         }
+      ],
+      [
+        "expo-location",
+        {
+          "locationWhenInUsePermission": "Belgrade Quest koristi tvoju lokaciju da ti pokaže gde se nalaziš u odnosu na quest."
+        }
       ]
     ],
     "experiments": {
