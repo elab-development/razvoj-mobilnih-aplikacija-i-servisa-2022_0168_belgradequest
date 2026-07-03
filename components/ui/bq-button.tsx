@@ -57,5 +57,5 @@ const styles = StyleSheet.create({
   outline: { backgroundColor: 'transparent', borderWidth: 1, borderColor: BQ.green },
   disabled: { opacity: 0.5 },
   text: { color: BQ.white, fontSize: 14, fontWeight: '700', letterSpacing: 2 },
-  textOutline: { color: BQ.green },
+  textOutline: { color: BQ.white },
 });

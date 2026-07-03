@@ -32,7 +32,7 @@ export default function QuestListScreen() {
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: BQ.darkGreen, paddingTop: 60 },
   logoWrap: { alignItems: 'center', marginBottom: Spacing.md },
-  logo: { width: 150, height: 90 },
+  logo: { width: 150, height: 100 },
   listWrap: { flex: 1, paddingHorizontal: Spacing.lg },
   list: { flex: 1 },
   listContent: { paddingBottom: Spacing.xl },
