@@ -75,7 +75,7 @@ export default function ProfileScreen() {
         <View style={styles.footerRight}>
           <TouchableOpacity
             style={styles.footerBtn}
-            onPress={() => {/* TODO: edit profile */ }}
+            onPress={() => router.push('/(tabs)/profile/edit')}
           >
             <Ionicons name="create-outline" size={24} color={BQ.white} />
           </TouchableOpacity>

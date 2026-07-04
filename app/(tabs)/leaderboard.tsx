@@ -18,7 +18,7 @@ export default function LeaderboardScreen() {
   return (
     <View style={styles.container}>
       <View style={styles.logoWrap}>
-        <Image source={require('@/assets/images/Logo.png')} style={styles.logo} resizeMode="contain" />
+        <Image source={require('@/assets/images/Logo2.png')} style={styles.logo} resizeMode="contain" />
       </View>
 
       <View style={styles.listWrap}>
@@ -62,7 +62,7 @@ export default function LeaderboardScreen() {
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: BQ.darkGreen, paddingTop: 60 },
   logoWrap: { alignItems: 'center', marginBottom: Spacing.md },
-  logo: { width: 150, height: 100 },
+  logo: { width: 176, height: 100 },
   listWrap: { flex: 1, paddingHorizontal: Spacing.lg },
   pageTitle: { color: BQ.orange, fontSize: 20, fontWeight: '800', textAlign: 'center', letterSpacing: 1, marginBottom: Spacing.md },
   headerRow: { flexDirection: 'row', paddingHorizontal: Spacing.xs, marginTop: Spacing.md, marginBottom: Spacing.sm },

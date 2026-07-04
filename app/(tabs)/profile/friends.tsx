@@ -92,9 +92,7 @@ export default function FriendsScreen() {
           <Ionicons name="list-outline" size={24} color={BQ.white} />
         </TouchableOpacity>
         <View style={styles.footerRight}>
-          <TouchableOpacity style={styles.footerBtn} onPress={() => {/* TODO: edit */ }}>
-            <Ionicons name="create-outline" size={24} color={BQ.white} />
-          </TouchableOpacity>
+            
           <TouchableOpacity
             style={styles.footerBtn}
             onPress={() => router.replace('/(auth)/login')}
