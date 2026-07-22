@@ -1,16 +1,20 @@
 import { BQ } from '@/constants/theme';
+import { useAuth } from '@/hooks/use-auth';
 import { router } from 'expo-router';
 import { useEffect } from 'react';
 import { ActivityIndicator, Image, StyleSheet, View } from 'react-native';
 
 export default function SplashScreen() {
-  
+  const { session, loading } = useAuth();
+
   useEffect(() => {
+    if (loading) return;
+
     const timer = setTimeout(() => {
-      router.replace('/(auth)/onboarding');
+      router.replace(session ? '/(tabs)/quest' : '/(auth)/onboarding');
     }, 2000);
     return () => clearTimeout(timer);
-  }, []);
+  }, [loading, session]);
 
   return (
     <View style={styles.container}>

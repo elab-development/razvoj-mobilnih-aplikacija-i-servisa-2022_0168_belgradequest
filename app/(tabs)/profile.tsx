@@ -1,7 +1,10 @@
 import { BQListHeader, BQListRow } from '@/components/ui/bq-list-row';
 import { BQ, Radius, Spacing } from '@/constants/theme';
+import { useAuth } from '@/hooks/use-auth';
+import { supabase } from '@/lib/supabase';
 import { Ionicons } from '@expo/vector-icons';
 import { router } from 'expo-router';
+import { useEffect, useState } from 'react';
 import { FlatList, Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
 // TODO: zameniti pravim podacima iz Supabase
@@ -22,6 +25,20 @@ const COMPLETED_QUESTS = [
 ];
 
 export default function ProfileScreen() {
+  const { signOut, session } = useAuth();
+  const [profile, setProfile] = useState<{ username: string; xp: number } | null>(null);
+
+  useEffect(() => {
+    if (!session?.user?.id) return;
+    supabase
+      .from('profiles')
+      .select('username, xp')
+      .eq('id', session.user.id)
+      .single()
+      .then(({ data, error }) => {
+        if (!error && data) setProfile(data);
+      });
+  }, [session]);
   return (
     <View style={styles.container}>
       {/* Avatar + info */}
@@ -34,8 +51,8 @@ export default function ProfileScreen() {
           )}
         </View>
         <View style={styles.userInfo}>
-          <Text style={styles.username}>{MOCK_USER.username}</Text>
-          <Text style={styles.xp}>{MOCK_USER.xp} xp</Text>
+          <Text style={styles.username}>{(profile?.username ?? MOCK_USER.username).toUpperCase()}</Text>
+          <Text style={styles.xp}>{profile?.xp ?? MOCK_USER.xp} xp</Text>
           <Text style={styles.rank}>
             rank{' '}
             <Text style={styles.rankHighlight}>#{MOCK_USER.rank}</Text>
@@ -81,7 +98,10 @@ export default function ProfileScreen() {
           </TouchableOpacity>
           <TouchableOpacity
             style={styles.footerBtn}
-            onPress={() => {/* TODO: logout */ router.replace('/(auth)/login'); }}
+            onPress={async () => {
+              await signOut();
+              router.replace('/(auth)/login');
+            }}
           >
             <Ionicons name="log-out-outline" size={24} color={BQ.white} />
           </TouchableOpacity>
