@@ -1,16 +1,19 @@
 import { BQButton } from '@/components/ui/bq-button';
 import { QuestTabHeader } from '@/components/ui/quest-tab-header';
-import { getQuestById } from '@/constants/mock-quests';
 import { BQ, Radius, Spacing } from '@/constants/theme';
+import { useAuth } from '@/hooks/use-auth';
+import { useQuest } from '@/hooks/use-quests';
+import { supabase } from '@/lib/supabase';
 import { Ionicons } from '@expo/vector-icons';
 import { CameraView, useCameraPermissions } from 'expo-camera';
-import { useLocalSearchParams } from 'expo-router';
+import { router, useLocalSearchParams } from 'expo-router';
 import { useRef, useState } from 'react';
-import { Alert, Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { ActivityIndicator, Alert, Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
 export default function QuestSubmitScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
-  const quest = getQuestById(id);
+  const { quest, loading: questLoading, error: questError } = useQuest(id);
+  const { session } = useAuth();  
 
   const [permission, requestPermission] = useCameraPermissions();
   const [photoUri, setPhotoUri] = useState<string | null>(null);
@@ -24,20 +27,57 @@ export default function QuestSubmitScreen() {
 
   const retake = () => setPhotoUri(null);
 
-  const handleSubmit = () => {
-    if (!photoUri) return;
+  const handleSubmit = async() => {
+    if (!photoUri || !quest || !session?.user?.id) return;
+
     setSubmitting(true);
-    // TODO: poslati photoUri AI-ju na proveru / na backend kad baza bude spremna
-    setTimeout(() => {
+    try {
+      // 1. Ucitaj sliku sa lokalnog fajla u memoriju
+      const response = await fetch(photoUri);
+      const arrayBuffer = await response.arrayBuffer();
+
+      // 2. Otpremi u Supabase Storage, svaki korisnik u svoj podfolder
+      const filePath = `${session.user.id}/${quest.id}-${Date.now()}.jpg`;
+      const { error: uploadError } = await supabase.storage
+        .from('quest-photos')
+        .upload(filePath, arrayBuffer, { contentType: 'image/jpeg' });
+
+      if (uploadError) throw uploadError;
+
+      // 3. Uzmi javni URL otpremljene slike
+      const { data: publicUrlData } = supabase.storage.from('quest-photos').getPublicUrl(filePath);
+
+      // 4. Upisi submission red u bazu
+      const { error: insertError } = await supabase.from('quest_submissions').insert({
+        quest_id: quest.id,
+        user_id: session.user.id,
+        photo_url: publicUrlData.publicUrl,
+      });
+
+      if (insertError) throw insertError;
+
+      Alert.alert('Poslato!', 'Slika je poslata na proveru.', [
+        { text: 'OK', onPress: () => router.push(`/quest/${quest.id}`) },
+      ]);
+    } catch (err: any) {
+      Alert.alert('Greška', err.message ?? 'Nešto nije u redu, pokušaj ponovo.');
+    } finally {
       setSubmitting(false);
-      Alert.alert('Poslato!', 'Slika je poslata na proveru.');
-    }, 800);
+    }
   };
 
-  if (!quest) {
+  if (questLoading) {
     return (
       <View style={styles.notFound}>
-        <Text style={styles.notFoundText}>Quest nije pronađen</Text>
+        <ActivityIndicator color={BQ.green} />
+      </View>
+    );
+  }
+
+    if (questError || !quest) {
+    return (
+      <View style={styles.notFound}>
+        <Text style={styles.notFoundText}>{questError ?? 'Quest nije pronađen'}</Text>
       </View>
     );
   }

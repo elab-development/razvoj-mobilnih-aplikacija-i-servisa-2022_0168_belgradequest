@@ -1,22 +1,22 @@
 import { QuestTabHeader } from '@/components/ui/quest-tab-header';
-import { getQuestById } from '@/constants/mock-quests';
 import { BQ, Radius, Spacing } from '@/constants/theme';
+import { useQuest } from '@/hooks/use-quests';
 import { Ionicons } from '@expo/vector-icons';
 import * as Location from 'expo-location';
 import { useLocalSearchParams } from 'expo-router';
 import { useEffect, useRef, useState } from 'react';
-import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { ActivityIndicator, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import MapView, { Marker, PROVIDER_GOOGLE } from 'react-native-maps';
 
 type Coords = { latitude: number; longitude: number };
 
 export default function QuestMapScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
-  const quest = getQuestById(id);
+  const { quest, loading, error } = useQuest(id);
 
   const mapRef = useRef<MapView>(null);
   const [userLocation, setUserLocation] = useState<Coords | null>(null);
-  const [errorMsg, setErrorMsg] = useState<string | null>(null);
+  const [locationErrorMsg, setLocationErrorMsg] = useState<string | null>(null);
 
   useEffect(() => {
     let subscription: Location.LocationSubscription | null = null;
@@ -24,7 +24,7 @@ export default function QuestMapScreen() {
     (async () => {
       const { status } = await Location.requestForegroundPermissionsAsync();
       if (status !== 'granted') {
-        setErrorMsg('Dozvoli pristup lokaciji da bi video svoju poziciju na mapi.');
+        setLocationErrorMsg('Dozvoli pristup lokaciji da bi video svoju poziciju na mapi.');
         return;
       }
 
@@ -50,10 +50,18 @@ export default function QuestMapScreen() {
     );
   };
 
-  if (!quest) {
+  if (loading) {
     return (
       <View style={styles.notFound}>
-        <Text style={styles.notFoundText}>Quest nije pronađen</Text>
+        <ActivityIndicator color={BQ.green} />
+      </View>
+    );
+  }
+
+    if (error || !quest) {
+    return (
+      <View style={styles.notFound}>
+        <Text style={styles.notFoundText}>{error ?? 'Quest nije pronađen'}</Text>
       </View>
     );
   }
@@ -66,15 +74,15 @@ export default function QuestMapScreen() {
         ref={mapRef}
         provider={PROVIDER_GOOGLE}
         style={styles.map}
-        initialRegion={{ latitude: quest.location.latitude, longitude: quest.location.longitude, latitudeDelta: 0.01, longitudeDelta: 0.01 }}
+        initialRegion={{ latitude: quest.latitude, longitude: quest.longitude, latitudeDelta: 0.01, longitudeDelta: 0.01 }}
         showsUserLocation={!!userLocation}
         showsMyLocationButton={false}
         followsUserLocation={false}
       >
         <Marker
-          coordinate={{ latitude: quest.location.latitude, longitude: quest.location.longitude }}
+          coordinate={{ latitude: quest.latitude, longitude: quest.longitude }}
           title={quest.title}
-          description={quest.location.address}
+          description={quest.address}
           pinColor={BQ.orange}
         />
       </MapView>
@@ -85,9 +93,9 @@ export default function QuestMapScreen() {
         </TouchableOpacity>
       )}
 
-      {errorMsg && (
+      {locationErrorMsg && (
         <View style={styles.warningBanner}>
-          <Text style={styles.warningText}>{errorMsg}</Text>
+          <Text style={styles.warningText}>{locationErrorMsg}</Text>
         </View>
       )}
     </View>

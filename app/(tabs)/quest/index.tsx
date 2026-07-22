@@ -1,10 +1,11 @@
 import { BQListHeader, BQListRow } from '@/components/ui/bq-list-row';
-import { QUESTS } from '@/constants/mock-quests';
 import { BQ, Spacing } from '@/constants/theme';
+import { useQuests } from '@/hooks/use-quests';
 import { Link } from 'expo-router';
-import { FlatList, Image, StyleSheet, View } from 'react-native';
+import { ActivityIndicator, FlatList, Image, StyleSheet, Text, View } from 'react-native';
 
 export default function QuestListScreen() {
+  const { quests, loading, error } = useQuests();
   return (
     <View style={styles.container}>
       <View style={styles.logoWrap}>
@@ -12,18 +13,28 @@ export default function QuestListScreen() {
       </View>
       <View style={styles.listWrap}>
         <BQListHeader left="Title" right="Reward" />
+        {loading && <ActivityIndicator color={BQ.green} style={styles.centerBox} />}
+
+        {!loading && error && <Text style={styles.errorText}>Greška pri učitavanju questova: {error}</Text>}
+
+        {!loading && !error && quests.length === 0 && (
+          <Text style={styles.emptyText}>Trenutno nema dostupnih questova.</Text>
+        )}
+
+        {!loading && !error && quests.length > 0 && (
         <FlatList
-          data={QUESTS}
+          data={quests}
           keyExtractor={(item) => item.id}
           style={styles.list}
           contentContainerStyle={styles.listContent}
           showsVerticalScrollIndicator={false}
           renderItem={({ item }) => (
             <Link href={`/quest/${item.id}`} asChild>
-              <BQListRow title={item.title} value={item.reward} />
+              <BQListRow title={item.title} value={`${item.reward_xp} XP`} />
             </Link>
           )}
         />
+        )}
       </View>
     </View>
   );
@@ -36,4 +47,7 @@ const styles = StyleSheet.create({
   listWrap: { flex: 1, paddingHorizontal: Spacing.lg },
   list: { flex: 1 },
   listContent: { paddingBottom: Spacing.xl },
+  centerBox: { marginTop: Spacing.xl },
+  errorText: { color: '#E5675A', textAlign: 'center', marginTop: Spacing.lg },
+  emptyText: { color: BQ.grey, textAlign: 'center', marginTop: Spacing.lg },
 });

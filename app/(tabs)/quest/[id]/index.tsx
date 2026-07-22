@@ -1,18 +1,26 @@
 import { QuestTabHeader } from '@/components/ui/quest-tab-header';
-import { getQuestById } from '@/constants/mock-quests';
 import { BQ, Radius, Spacing } from '@/constants/theme';
+import { formatExpiry, useQuest } from '@/hooks/use-quests';
 import { Ionicons } from '@expo/vector-icons';
 import { useLocalSearchParams } from 'expo-router';
-import { ScrollView, StyleSheet, Text, View } from 'react-native';
+import { ActivityIndicator, ScrollView, StyleSheet, Text, View } from 'react-native';
 
 export default function QuestDescriptionScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
-  const quest = getQuestById(id);
+  const { quest, loading, error } = useQuest(id);
 
-  if (!quest) {
+  if (loading) {
     return (
       <View style={styles.notFound}>
-        <Text style={styles.notFoundText}>Quest nije pronađen</Text>
+        <ActivityIndicator color={BQ.green} />
+      </View>
+    );
+  }
+
+  if (error || !quest) {
+    return (
+      <View style={styles.notFound}>
+        <Text style={styles.notFoundText}>{error ?? 'Quest nije pronađen'}</Text>
       </View>
     );
   }
@@ -27,11 +35,11 @@ export default function QuestDescriptionScreen() {
         <Text style={styles.description}>{quest.description}</Text>
         <View style={styles.infoCard}>
           <Text style={styles.infoLabel}>Reward</Text>
-          <Text style={styles.infoValue}>{quest.reward}</Text>
+          <Text style={styles.infoValue}>{quest.reward_xp} XP</Text>
         </View>
         <View style={styles.infoCard}>
           <Text style={styles.infoLabel}>Expires</Text>
-          <Text style={styles.infoValue}>{quest.expires}</Text>
+          <Text style={styles.infoValue}>{formatExpiry(quest.expires_at)}</Text>
         </View>
       </ScrollView>
     </View>
